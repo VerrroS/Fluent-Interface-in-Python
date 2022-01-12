@@ -6,11 +6,9 @@ class Pizza:
         self.toppings = []
         self.price = None
         self.rating = None
-        self.method = None
 
     def at(self, restaurant):
         self.restaurant = restaurant
-        self.method = self.check()
         return self
 
     def for_(self, price):
@@ -18,13 +16,11 @@ class Pizza:
             self.price = price
         else:
             raise TypeError("Price must be a number")
-        self.method = self.check()
         return self
 
     def with_(self, toppings):
         for topping in toppings:
             self.toppings.append(topping)
-        self.method = self.check()
         return self
 
     def rated(self, rating):
@@ -35,26 +31,22 @@ class Pizza:
                 raise ValueError("Rating must be between 1 and 5")
         else:
             raise TypeError("Rating must be an integer")
-        self.method = self.check()
         return self
 
     def __call__(self):
-        if self.method:
-            return self.method()
-        return None
-
-    def check(self):
-        if self.restaurant:
-            if self.price:
-                if self.toppings:
-                    if self.rating:
-                        return lambda: show_input(self.name, self.restaurant, self.price, self.toppings, self.rating)
+        if self.restaurant is None:
+            raise ValueError("You must specify a restaurant")
+        if self.price is None:
+            raise ValueError("You must specify a price")
         else:
-            raise ValueError("Restaurant is required")
+            if self.rating is None:
+                self.rating = "no"
+            if len(self.toppings) == 0:
+                self.toppings = "no specific toppings"
+            else:
+                self.toppings = " and ".join(self.toppings)
+            return print(f'{self.name} at {self.restaurant} with {self.toppings} is {self.price}'
+                         f' dollars and has {self.rating} stars.')
 
 
-def show_input(name, restaurant, price, toppings, rating):
-    print(f'{name} at {restaurant} with {" and ".join(toppings)} is {price} dollars and has {rating} stars.')
-
-
-new_pizza = Pizza("Pepperoni").at('Pizza Hut').for_(10.99).with_(['Pepperoni', 'Fungi']).rated(5)()
+new_pizza = Pizza("Pepperoni").rated(5).for_(10.99).at('Pizza Hut')()
